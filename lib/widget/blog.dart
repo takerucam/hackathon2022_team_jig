@@ -10,12 +10,25 @@ class Blog extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 40,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Color.fromARGB(255, 232, 232, 232),
+            width: 1,
+          ),
+        ),
+        color: Colors.white,
       ),
       child: Column(
         children: <Widget>[
-          Text(blog.title),
+          Text(
+            blog.title,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
     );

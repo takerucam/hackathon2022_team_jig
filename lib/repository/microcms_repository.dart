@@ -11,22 +11,21 @@ final microcmsClientProvider = Provider<MicroCMSClient>((ref) {
   return MicroCMSClient(_dio);
 });
 
-// final microcmsRepository = StateNotifierProvider<MicrocmsRepository, void>(
-//   ((ref) => MicrocmsRepository(ref.read)),
-// );
+final microcmsRepository = Provider<MicrocmsRepository>(
+  ((ref) => MicrocmsRepository(ref.read)),
+);
 
-// class MicrocmsRepository extends StateNotifier<void> {
-//   final Reader _reader;
-//   MicrocmsRepository(this._reader) : super(null);
+class MicrocmsRepository {
+  final Reader _reader;
+  MicrocmsRepository(this._reader);
 
-//   Future<List<BlogResultData>?> getBlogData() async {
-//     final _dio = _reader(dioProvider);
-//     await dotenv.load(fileName: '.env');
-//     final res = await _reader(microcmsClientProvider)
-//         .getBlogsData(dotenv.env['MICROCMS_KEY']!);
-//     return res.contents;
-//   }
-// }
+  Future<List<BlogResultData>?> getBlogData() async {
+    await dotenv.load(fileName: '.env');
+    final res = await _reader(microcmsClientProvider)
+        .getBlogsData(dotenv.env['MICROCMS_KEY']!);
+    return res.contents;
+  }
+}
 
 final blogResultDataProvider =
     FutureProvider<List<BlogResultData>>((ref) async {

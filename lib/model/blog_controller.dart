@@ -10,13 +10,13 @@ class BlogController extends StateNotifier<AsyncValue<List<BlogResultData>>> {
   final Reader _reader;
   BlogController(this._reader) : super(const AsyncLoading());
 
-  // Future<void> fetch() async {
-  //   try {
-  //     state = const AsyncLoading();
-  //     final res = await _reader(microcmsRepository.notifier).getBlogData();
-  //     if (res != null) state = AsyncData(res);
-  //   } catch (e) {
-  //     state = AsyncError(e);
-  //   }
-  // }
+  Future<void> fetch() async {
+    try {
+      state = const AsyncLoading();
+      final res = await _reader(microcmsRepository).getBlogData();
+      if (res != null) state = AsyncData(res);
+    } catch (e) {
+      state = AsyncError(e);
+    }
+  }
 }
