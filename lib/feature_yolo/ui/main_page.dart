@@ -45,66 +45,26 @@ class BoundingBox extends StatelessWidget {
   }
 }
 
-class CameraView extends StatelessWidget {
-  final CameraController cameraController;
+class CameraView extends HookConsumerWidget {
+  final MLCamera camera;
   const CameraView({
     Key? key,
-    required this.cameraController,
+    required this.camera,
   }) : super(key: key);
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recognitions = ref.watch(recognitionsProvider);
+
     return AspectRatio(
       /// from camera 0.7.0, change aspect ratio
       /// https://pub.dev/packages/camera/changelog#070
-      aspectRatio: 1 / cameraController.value.aspectRatio,
-      child: CameraPreview(cameraController),
-    );
-  }
-}
-
-class MainPage extends HookConsumerWidget {
-  static String routeName = '/main';
-  const MainPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
-    final mlCamera = ref.watch(mlCameraProvider(size));
-    final recognitions = ref.watch(recognitionsProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ゴミ分別'),
-      ),
-      body: mlCamera.when(
-        data: (mlCamera) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: mlCamera.actualPreviewSize.width,
-              height: mlCamera.actualPreviewSize.height,
-              child: Stack(
-                children: [
-                  CameraView(cameraController: mlCamera.cameraController),
-                  buildBoxes(
-                    recognitions,
-                    mlCamera.actualPreviewSize,
-                    mlCamera.ratio,
-                  ),
-                ],
-              ),
-            ),
-            const Flexible(
-              child: _ToastCategories(),
-            )
-          ],
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (err, stack) => Center(
-          child: Text(
-            err.toString(),
-          ),
+      aspectRatio: 1 / camera.cameraController.value.aspectRatio,
+      child: CameraPreview(
+        camera.cameraController,
+        child: buildBoxes(
+          recognitions,
+          camera.actualPreviewSize,
+          camera.ratio,
         ),
       ),
     );
@@ -127,6 +87,42 @@ class MainPage extends HookConsumerWidget {
           ratio: ratio,
         );
       }).toList(),
+    );
+  }
+}
+
+class MainPage extends HookConsumerWidget {
+  static String routeName = '/main';
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
+    final mlCamera = ref.watch(mlCameraProvider(size));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('ゴミ分別'),
+      ),
+      body: mlCamera.when(
+        data: (mlCamera) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CameraView(camera: mlCamera),
+            const Flexible(
+              child: _ToastCategories(),
+            )
+          ],
+        ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (err, stack) => Center(
+          child: Text(
+            err.toString(),
+          ),
+        ),
+      ),
     );
   }
 }

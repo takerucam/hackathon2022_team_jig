@@ -14,9 +14,8 @@ class Classifier {
   static const int inputSize = 640;
   static const int clsNum = 80;
 
-  static const double objConfTh = 0.40;
-
-  static const double clsConfTh = 0.40;
+  static const double objConfTh = 0.70;
+  static const double clsConfTh = 0.70;
 
   late Interpreter? _interpreter;
   ImageProcessor? imageProcessor;
