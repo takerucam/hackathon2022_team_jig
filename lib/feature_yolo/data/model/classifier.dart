@@ -14,9 +14,9 @@ class Classifier {
   static const int inputSize = 640;
   static const int clsNum = 80;
 
-  static const double objConfTh = 0.80;
+  static const double objConfTh = 0.40;
 
-  static const double clsConfTh = 0.80;
+  static const double clsConfTh = 0.40;
 
   late Interpreter? _interpreter;
   ImageProcessor? imageProcessor;
@@ -60,6 +60,7 @@ class Classifier {
             modelFileName,
             options: InterpreterOptions()..threads = 4,
           );
+
       final outputTensors = _interpreter!.getOutputTensors();
       _outputShapes = [];
       _outputTypes = [];

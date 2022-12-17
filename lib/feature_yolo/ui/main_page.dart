@@ -10,23 +10,24 @@ class BoundingBox extends StatelessWidget {
   final Recognition result;
   final Size actualPreviewSize;
   final double ratio;
+
   const BoundingBox({
     Key? key,
     required this.result,
     required this.actualPreviewSize,
     required this.ratio,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final renderLocation = result.getRenderLocation(
       actualPreviewSize,
       ratio,
     );
+
     return Positioned(
       left: renderLocation.left,
       top: renderLocation.top,
-      width: renderLocation.width,
-      height: renderLocation.height,
       child: Container(
         width: renderLocation.width,
         height: renderLocation.height,
@@ -101,15 +102,19 @@ class MainPage extends HookConsumerWidget {
         data: (mlCamera) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Stack(
-              children: [
-                CameraView(cameraController: mlCamera.cameraController),
-                buildBoxes(
-                  recognitions,
-                  mlCamera.actualPreviewSize,
-                  mlCamera.ratio,
-                ),
-              ],
+            SizedBox(
+              width: mlCamera.actualPreviewSize.width,
+              height: mlCamera.actualPreviewSize.height,
+              child: Stack(
+                children: [
+                  CameraView(cameraController: mlCamera.cameraController),
+                  buildBoxes(
+                    recognitions,
+                    mlCamera.actualPreviewSize,
+                    mlCamera.ratio,
+                  ),
+                ],
+              ),
             ),
             const Flexible(
               child: _ToastCategories(),
@@ -137,6 +142,7 @@ class MainPage extends HookConsumerWidget {
       return const SizedBox();
     }
     return Stack(
+      clipBehavior: Clip.none,
       children: recognitions.map((result) {
         return BoundingBox(
           result: result,
