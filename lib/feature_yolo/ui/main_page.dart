@@ -40,29 +40,6 @@ class BoundingBox extends StatelessWidget {
             Radius.circular(2),
           ),
         ),
-        child: buildBoxLabel(result, context),
-      ),
-    );
-  }
-
-  Align buildBoxLabel(Recognition result, BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: FittedBox(
-        child: ColoredBox(
-          color: Colors.blue,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                result.displayLabel,
-              ),
-              Text(
-                ' ${result.score.toStringAsFixed(2)}',
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
