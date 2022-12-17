@@ -21,9 +21,12 @@ class _MicroCMSClient implements MicroCMSClient {
   String? baseUrl;
 
   @override
-  Future<MicrocmsSeparationState> getSeparationData(apiKey) async {
+  Future<MicrocmsSeparationState> getSeparationData(
+    apiKey,
+    limit,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'limit': limit};
     final _headers = <String, dynamic>{r'X-MICROCMS-API-KEY': apiKey};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
@@ -45,9 +48,12 @@ class _MicroCMSClient implements MicroCMSClient {
   }
 
   @override
-  Future<MicrocmsYoloState> getYoloData(apiKey) async {
+  Future<MicrocmsYoloState> getYoloData(
+    apiKey,
+    limit,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'limit': limit};
     final _headers = <String, dynamic>{r'X-MICROCMS-API-KEY': apiKey};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
