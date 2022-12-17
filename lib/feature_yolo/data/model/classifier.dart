@@ -23,12 +23,17 @@ class Classifier {
   late List<List<int>> _outputShapes;
 
   late List<TfLiteType> _outputTypes;
+  List<String>? _labels;
   Classifier({
     Interpreter? interpreter,
+    List<String>? labels,
   }) {
     loadModel(interpreter);
+    loadLabels(labels: labels);
   }
+
   Interpreter? get interpreter => _interpreter;
+  List<String>? get labels => _labels;
 
   /// image pre process
   TensorImage getProcessedImage(TensorImage inputImage) {
@@ -50,6 +55,14 @@ class Classifier {
         )
         .build();
     return imageProcessor!.process(inputImage);
+  }
+
+  void loadLabels({List<String>? labels}) async {
+    try {
+      _labels = labels ?? displayLabels;
+    } catch (e) {
+      print("Error while loading labels: $e");
+    }
   }
 
   /// load interpreter

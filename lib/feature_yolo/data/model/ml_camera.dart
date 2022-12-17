@@ -1,14 +1,12 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/entity/recognition.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/model/classifier.dart';
-import 'package:hackathon2022_team_jig/feature_yolo//utils/image_utils.dart';
+import 'package:hackathon2022_team_jig/feature_yolo/utils/isolate_utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image/image.dart' as image_lib;
-import 'package:tflite_flutter/tflite_flutter.dart';
 
 final mlCameraProvider =
     FutureProvider.autoDispose.family<MLCamera, Size>((ref, size) async {
@@ -29,15 +27,6 @@ final mlCameraProvider =
 
 final recognitionsProvider = StateProvider<List<Recognition>>((ref) => []);
 
-class IsolateData {
-  final CameraImage cameraImage;
-  final int interpreterAddress;
-  IsolateData({
-    required this.cameraImage,
-    required this.interpreterAddress,
-  });
-}
-
 class MLCamera {
   final Reader _read;
 
@@ -55,6 +44,8 @@ class MLCamera {
 
   late Classifier classifier;
 
+  late IsolateUtils isolateUtils;
+
   bool isPredicting = false;
 
   MLCamera(
@@ -63,9 +54,21 @@ class MLCamera {
     this.cameraViewSize,
   ) {
     Future(() async {
+      isolateUtils = IsolateUtils();
+      await isolateUtils.start();
+
       classifier = Classifier();
       await cameraController.startImageStream(onCameraAvailable);
     });
+  }
+
+  /// inference function
+  Future<List<Recognition>> inference(IsolateData isolateCamImgData) async {
+    ReceivePort responsePort = ReceivePort();
+    isolateUtils.sendPort
+        .send(isolateCamImgData..responsePort = responsePort.sendPort);
+    var results = await responsePort.first;
+    return results;
   }
 
   Future<void> onCameraAvailable(CameraImage cameraImage) async {
@@ -79,30 +82,12 @@ class MLCamera {
 
     isPredicting = true;
     final isolateCamImgData = IsolateData(
-      cameraImage: cameraImage,
-      interpreterAddress: classifier.interpreter!.address,
+      cameraImage,
+      classifier.interpreter!.address,
+      classifier.labels!,
     );
     _read(recognitionsProvider.notifier).state =
-        await compute(inference, isolateCamImgData);
+        await inference(isolateCamImgData);
     isPredicting = false;
-  }
-
-  /// inference function
-  static Future<List<Recognition>> inference(
-      IsolateData isolateCamImgData) async {
-    var image = ImageUtils.convertYUV420ToImage(
-      isolateCamImgData.cameraImage,
-    );
-    if (Platform.isAndroid) {
-      image = image_lib.copyRotate(image, 90);
-    }
-
-    final classifier = Classifier(
-      interpreter: Interpreter.fromAddress(
-        isolateCamImgData.interpreterAddress,
-      ),
-    );
-
-    return classifier.predict(image);
   }
 }
