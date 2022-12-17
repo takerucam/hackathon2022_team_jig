@@ -14,21 +14,25 @@ class Classifier {
   static const int inputSize = 640;
   static const int clsNum = 80;
 
-  static const double objConfTh = 0.80;
-
-  static const double clsConfTh = 0.80;
+  static const double objConfTh = 0.70;
+  static const double clsConfTh = 0.70;
 
   late Interpreter? _interpreter;
   ImageProcessor? imageProcessor;
   late List<List<int>> _outputShapes;
 
   late List<TfLiteType> _outputTypes;
+  List<String>? _labels;
   Classifier({
     Interpreter? interpreter,
+    List<String>? labels,
   }) {
     loadModel(interpreter);
+    loadLabels(labels: labels);
   }
+
   Interpreter? get interpreter => _interpreter;
+  List<String>? get labels => _labels;
 
   /// image pre process
   TensorImage getProcessedImage(TensorImage inputImage) {
@@ -52,6 +56,14 @@ class Classifier {
     return imageProcessor!.process(inputImage);
   }
 
+  void loadLabels({List<String>? labels}) async {
+    try {
+      _labels = labels ?? displayLabels;
+    } catch (e) {
+      print("Error while loading labels: $e");
+    }
+  }
+
   /// load interpreter
   Future<void> loadModel(Interpreter? interpreter) async {
     try {
@@ -60,6 +72,7 @@ class Classifier {
             modelFileName,
             options: InterpreterOptions()..threads = 4,
           );
+
       final outputTensors = _interpreter!.getOutputTensors();
       _outputShapes = [];
       _outputTypes = [];
