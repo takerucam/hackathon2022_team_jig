@@ -11,6 +11,10 @@ class ToastController extends StateNotifier<List<ToastState>> {
   final Reader _reader;
   ToastController(this._reader) : super([]);
 
+  void resetToastState() {
+    state = [];
+  }
+
   void updateToastMessage(String msg) {
     final yoloState = _reader(yoloProvider);
     final separationState = _reader(separationProvider);
@@ -32,7 +36,6 @@ class ToastController extends StateNotifier<List<ToastState>> {
     }
 
     toastList.remove(SeparationsState());
-
     toastList.toList().asMap().forEach((i, toast) {
       state = [
         ...state,
@@ -43,9 +46,5 @@ class ToastController extends StateNotifier<List<ToastState>> {
         ),
       ];
     });
-  }
-
-  void resetToastState() {
-    state = [];
   }
 }

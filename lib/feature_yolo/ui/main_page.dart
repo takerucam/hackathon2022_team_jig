@@ -55,17 +55,18 @@ class CameraView extends HookConsumerWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final a = ref.watch(recognitionsProvider);
-    a.sort(((a, b) => -(a.score.compareTo(b.score))));
+    final recognitions = ref.watch(recognitionsProvider);
 
-    final highLabel = a.isEmpty ? '' : a[0].displayLabel;
+    recognitions.sort(((a, b) => -(a.score.compareTo(b.score))));
+
+    final highLabel = recognitions.isEmpty ? '' : recognitions[0].displayLabel;
     useAsyncEffect(() {
       if (highLabel.isNotEmpty) {
+        ref.read(toastProvider.notifier).resetToastState();
         ref.read(toastProvider.notifier).updateToastMessage(highLabel);
       }
       return;
     }, [highLabel]);
-    final recognitions = ref.watch(recognitionsProvider);
 
     return AspectRatio(
       /// from camera 0.7.0, change aspect ratio
@@ -160,8 +161,9 @@ class _Badge extends StatelessWidget {
       ),
       child: Text(
         data.separation,
-        style: const TextStyle(
-          fontSize: 24,
+        maxLines: 2,
+        style: TextStyle(
+          fontSize: (data.separation.length > 7) ? 16 : 24,
           height: 1.2,
           color: Colors.black,
         ),
@@ -183,7 +185,7 @@ class _Toast extends StatelessWidget {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.symmetric(
-        horizontal: 32,
+        horizontal: 16,
         vertical: 8,
       ),
       child: Row(
@@ -197,14 +199,22 @@ class _Toast extends StatelessWidget {
                 height: 64,
               ),
               const SizedBox(width: 8),
-              Text(
-                data.item,
-                style: const TextStyle(
-                    fontSize: 32, height: 1.2, color: Colors.black),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 150),
+                child: Text(
+                  data.item,
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    height: 1.2,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ],
           ),
-          _Badge(data: data),
+          const SizedBox(width: 8),
+          Flexible(child: _Badge(data: data)),
         ],
       ),
     );
@@ -218,44 +228,7 @@ class _ToastCategories extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final list = ref.watch(toastProvider);
-    final list = [
-      ToastState(
-        icon:
-            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
-        item: "衣類",
-        category: "資源物",
-        separation: "繊維類",
-      ),
-      ToastState(
-        icon:
-            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
-        item: "衣類",
-        category: "資源物",
-        separation: "繊維類",
-      ),
-      ToastState(
-        icon:
-            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
-        item: "衣類",
-        category: "資源物",
-        separation: "繊維類",
-      ),
-      ToastState(
-        icon:
-            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
-        item: "衣類",
-        category: "資源物",
-        separation: "繊維類",
-      ),
-      ToastState(
-        icon:
-            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
-        item: "衣類",
-        category: "資源物",
-        separation: "繊維類",
-      ),
-    ];
+    final list = ref.watch(toastProvider);
 
     return ListView.separated(
       separatorBuilder: (context, index) =>
