@@ -14,9 +14,7 @@ class ToastController extends StateNotifier<List<ToastState>> {
   void updateToastMessage(String msg) {
     final yoloState = _reader(yoloProvider);
     final separationState = _reader(separationProvider);
-    if (yoloState.isEmpty) {
-      return;
-    }
+
     // 品名の候補取得
     final YoloState? yolo = yoloState.firstWhere(
       (element) => element.yolo == msg,

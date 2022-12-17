@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hackathon2022_team_jig/data/toast_state.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/entity/recognition.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/model/ml_camera.dart';
+import 'package:hackathon2022_team_jig/model/toast_controller.dart';
+import 'package:hackathon2022_team_jig/util/use_async_effect.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BoundingBox extends StatelessWidget {
@@ -53,6 +55,16 @@ class CameraView extends HookConsumerWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final a = ref.watch(recognitionsProvider);
+    a.sort(((a, b) => -(a.score.compareTo(b.score))));
+
+    final highLabel = a.isEmpty ? '' : a[0].displayLabel;
+    useAsyncEffect(() {
+      if (highLabel.isNotEmpty) {
+        ref.read(toastProvider.notifier).updateToastMessage(highLabel);
+      }
+      return;
+    }, [highLabel]);
     final recognitions = ref.watch(recognitionsProvider);
 
     return AspectRatio(
@@ -180,7 +192,7 @@ class _Toast extends StatelessWidget {
           Row(
             children: [
               CachedNetworkImage(
-                imageUrl: data.icon,
+                imageUrl: data.icon!,
                 width: 64,
                 height: 64,
               ),
