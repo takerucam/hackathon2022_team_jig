@@ -43,8 +43,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   freezed_annotation: ^2.2.0
   retrofit: ^3.3.1
+  flutter_dotenv: ^5.0.2
   json_annotation: ^4.7.0
   dio: ^4.0.6
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -66,5 +68,6 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   assets:
+    - .env
     - assets/
   uses-material-design: true
