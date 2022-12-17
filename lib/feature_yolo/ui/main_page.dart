@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:hackathon2022_team_jig/data/toast_state.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/entity/recognition.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/model/ml_camera.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,23 +10,24 @@ class BoundingBox extends StatelessWidget {
   final Recognition result;
   final Size actualPreviewSize;
   final double ratio;
+
   const BoundingBox({
     Key? key,
     required this.result,
     required this.actualPreviewSize,
     required this.ratio,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final renderLocation = result.getRenderLocation(
       actualPreviewSize,
       ratio,
     );
+
     return Positioned(
       left: renderLocation.left,
       top: renderLocation.top,
-      width: renderLocation.width,
-      height: renderLocation.height,
       child: Container(
         width: renderLocation.width,
         height: renderLocation.height,
@@ -37,82 +40,31 @@ class BoundingBox extends StatelessWidget {
             Radius.circular(2),
           ),
         ),
-        child: buildBoxLabel(result, context),
-      ),
-    );
-  }
-
-  Align buildBoxLabel(Recognition result, BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: FittedBox(
-        child: ColoredBox(
-          color: Colors.blue,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                result.displayLabel,
-              ),
-              Text(
-                ' ${result.score.toStringAsFixed(2)}',
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
 }
 
-class CameraView extends StatelessWidget {
-  final CameraController cameraController;
+class CameraView extends HookConsumerWidget {
+  final MLCamera camera;
   const CameraView({
     Key? key,
-    required this.cameraController,
+    required this.camera,
   }) : super(key: key);
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recognitions = ref.watch(recognitionsProvider);
+
     return AspectRatio(
       /// from camera 0.7.0, change aspect ratio
       /// https://pub.dev/packages/camera/changelog#070
-      aspectRatio: 1 / cameraController.value.aspectRatio,
-      child: CameraPreview(cameraController),
-    );
-  }
-}
-
-class MainPage extends HookConsumerWidget {
-  static String routeName = '/main';
-  const MainPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
-    final mlCamera = ref.watch(mlCameraProvider(size));
-    final recognitions = ref.watch(recognitionsProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter YOLOv5 App'),
-      ),
-      body: mlCamera.when(
-        data: (mlCamera) => Stack(
-          children: [
-            CameraView(cameraController: mlCamera.cameraController),
-            buildBoxes(
-              recognitions,
-              mlCamera.actualPreviewSize,
-              mlCamera.ratio,
-            ),
-          ],
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (err, stack) => Center(
-          child: Text(
-            err.toString(),
-          ),
+      aspectRatio: 1 / camera.cameraController.value.aspectRatio,
+      child: CameraPreview(
+        camera.cameraController,
+        child: buildBoxes(
+          recognitions,
+          camera.actualPreviewSize,
+          camera.ratio,
         ),
       ),
     );
@@ -127,6 +79,7 @@ class MainPage extends HookConsumerWidget {
       return const SizedBox();
     }
     return Stack(
+      clipBehavior: Clip.none,
       children: recognitions.map((result) {
         return BoundingBox(
           result: result,
@@ -134,6 +87,169 @@ class MainPage extends HookConsumerWidget {
           ratio: ratio,
         );
       }).toList(),
+    );
+  }
+}
+
+class MainPage extends HookConsumerWidget {
+  static String routeName = '/main';
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
+    final mlCamera = ref.watch(mlCameraProvider(size));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('ゴミ分別'),
+      ),
+      body: mlCamera.when(
+        data: (mlCamera) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CameraView(camera: mlCamera),
+            const Flexible(
+              child: _ToastCategories(),
+            )
+          ],
+        ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (err, stack) => Center(
+          child: Text(
+            err.toString(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final ToastState data;
+
+  const _Badge({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.cyan,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        data.separation,
+        style: const TextStyle(
+          fontSize: 24,
+          height: 1.2,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+}
+
+class _Toast extends StatelessWidget {
+  final ToastState data;
+
+  const _Toast(
+    this.data, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 32,
+        vertical: 8,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              CachedNetworkImage(
+                imageUrl: data.icon,
+                width: 64,
+                height: 64,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                data.item,
+                style: const TextStyle(
+                    fontSize: 32, height: 1.2, color: Colors.black),
+              ),
+            ],
+          ),
+          _Badge(data: data),
+        ],
+      ),
+    );
+  }
+}
+
+class _ToastCategories extends HookConsumerWidget {
+  const _ToastCategories({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final list = ref.watch(toastProvider);
+    final list = [
+      ToastState(
+        icon:
+            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
+        item: "衣類",
+        category: "資源物",
+        separation: "繊維類",
+      ),
+      ToastState(
+        icon:
+            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
+        item: "衣類",
+        category: "資源物",
+        separation: "繊維類",
+      ),
+      ToastState(
+        icon:
+            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
+        item: "衣類",
+        category: "資源物",
+        separation: "繊維類",
+      ),
+      ToastState(
+        icon:
+            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
+        item: "衣類",
+        category: "資源物",
+        separation: "繊維類",
+      ),
+      ToastState(
+        icon:
+            "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
+        item: "衣類",
+        category: "資源物",
+        separation: "繊維類",
+      ),
+    ];
+
+    return ListView.separated(
+      separatorBuilder: (context, index) =>
+          const Divider(height: 2, color: Colors.grey),
+      itemBuilder: (context, index) => _Toast(list[index]),
+      itemCount: list.length,
     );
   }
 }
