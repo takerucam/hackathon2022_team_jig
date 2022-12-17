@@ -151,6 +151,7 @@ class _Badge extends StatelessWidget {
         style: const TextStyle(
           fontSize: 24,
           height: 1.2,
+          color: Colors.black,
         ),
       ),
     );
@@ -167,27 +168,30 @@ class _Toast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: Colors.white,
       padding: const EdgeInsets.symmetric(
         horizontal: 32,
         vertical: 8,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CachedNetworkImage(
-            imageUrl: data.icon,
-            width: 64,
-            height: 64,
+          Row(
+            children: [
+              CachedNetworkImage(
+                imageUrl: data.icon,
+                width: 64,
+                height: 64,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                data.item,
+                style: const TextStyle(
+                    fontSize: 32, height: 1.2, color: Colors.black),
+              ),
+            ],
           ),
-          Text(
-            data.item,
-            style: const TextStyle(
-              fontSize: 32,
-              height: 1.2,
-            ),
-          ),
-          const SizedBox(width: 8),
           _Badge(data: data),
         ],
       ),
@@ -241,10 +245,11 @@ class _ToastCategories extends HookConsumerWidget {
       ),
     ];
 
-    return ListView(
-      children: [
-        ...list.map((toast) => _Toast(toast)),
-      ],
+    return ListView.separated(
+      separatorBuilder: (context, index) =>
+          const Divider(height: 2, color: Colors.grey),
+      itemBuilder: (context, index) => _Toast(list[index]),
+      itemCount: list.length,
     );
   }
 }
