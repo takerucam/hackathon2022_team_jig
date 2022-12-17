@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ToastState {
-  String get icon => throw _privateConstructorUsedError;
+  String? get icon => throw _privateConstructorUsedError;
   String get item => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   String get separation => throw _privateConstructorUsedError;
@@ -32,7 +32,7 @@ abstract class $ToastStateCopyWith<$Res> {
           ToastState value, $Res Function(ToastState) then) =
       _$ToastStateCopyWithImpl<$Res, ToastState>;
   @useResult
-  $Res call({String icon, String item, String category, String separation});
+  $Res call({String? icon, String item, String category, String separation});
 }
 
 /// @nodoc
@@ -48,16 +48,16 @@ class _$ToastStateCopyWithImpl<$Res, $Val extends ToastState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? icon = null,
+    Object? icon = freezed,
     Object? item = null,
     Object? category = null,
     Object? separation = null,
   }) {
     return _then(_value.copyWith(
-      icon: null == icon
+      icon: freezed == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       item: null == item
           ? _value.item
           : item // ignore: cast_nullable_to_non_nullable
@@ -82,7 +82,7 @@ abstract class _$$_ToastStateCopyWith<$Res>
       __$$_ToastStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String icon, String item, String category, String separation});
+  $Res call({String? icon, String item, String category, String separation});
 }
 
 /// @nodoc
@@ -96,16 +96,16 @@ class __$$_ToastStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? icon = null,
+    Object? icon = freezed,
     Object? item = null,
     Object? category = null,
     Object? separation = null,
   }) {
     return _then(_$_ToastState(
-      icon: null == icon
+      icon: freezed == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       item: null == item
           ? _value.item
           : item // ignore: cast_nullable_to_non_nullable
@@ -126,14 +126,10 @@ class __$$_ToastStateCopyWithImpl<$Res>
 
 class _$_ToastState implements _ToastState {
   _$_ToastState(
-      {this.icon = '',
-      this.item = '',
-      this.category = '',
-      this.separation = ''});
+      {this.icon, this.item = '', this.category = '', this.separation = ''});
 
   @override
-  @JsonKey()
-  final String icon;
+  final String? icon;
   @override
   @JsonKey()
   final String item;
@@ -175,13 +171,13 @@ class _$_ToastState implements _ToastState {
 
 abstract class _ToastState implements ToastState {
   factory _ToastState(
-      {final String icon,
+      {final String? icon,
       final String item,
       final String category,
       final String separation}) = _$_ToastState;
 
   @override
-  String get icon;
+  String? get icon;
   @override
   String get item;
   @override

@@ -9,23 +9,43 @@ final toastProvider = StateNotifierProvider<ToastController, List<ToastState>>(
 
 class ToastController extends StateNotifier<List<ToastState>> {
   final Reader _reader;
-  ToastController(this._reader) : super([ToastState()]);
+  ToastController(this._reader) : super([]);
 
   void updateToastMessage(String msg) {
     final yoloState = _reader(yoloProvider);
     final separationState = _reader(separationProvider);
 
     // 品名の候補取得
-    final List<String> yoloCandidates =
-        yoloState.firstWhere((yolo) => yolo.yolo == msg).candidates;
+    final YoloState? yolo = yoloState.firstWhere(
+      (element) => element.yolo == msg,
+      orElse: () => YoloState(),
+    );
+
+    final List<String> yoloCandidates = yolo!.candidates;
 
     Set<SeparationsState> toastList = {};
     for (var yoloCandidate in yoloCandidates) {
       final List<SeparationsState> a = separationState
-          .where((v) => v.candidate.contains(yoloCandidate))
+          .where((v) => v.candidates.any((v) => v == yoloCandidate))
           .toList();
       toastList.addAll(a);
     }
-    toastList.map((toast) {});
+
+    toastList.remove(SeparationsState());
+
+    toastList.toList().asMap().forEach((i, toast) {
+      state = [
+        ...state,
+        ToastState(
+          icon: toast.icon?.url,
+          item: yoloCandidates[i],
+          separation: toast.name,
+        ),
+      ];
+    });
+  }
+
+  void resetToastState() {
+    state = [];
   }
 }

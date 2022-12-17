@@ -22,14 +22,14 @@ class MicrocmsRepository {
   // 分別データ取得
   Future<List<SeparationsState>> getSeparationData() async {
     final res = await _reader(microcmsClientProvider)
-        .getSeparationData(dotenv.env['MICROCMS_KEY']!);
+        .getSeparationData(dotenv.env['MICROCMS_KEY']!, 70);
     return res.contents;
   }
 
   // yoloと品名のデータセットを取得
   Future<List<YoloState>> getYoloData() async {
     final res = await _reader(microcmsClientProvider)
-        .getYoloData(dotenv.env['MICROCMS_KEY']!);
+        .getYoloData(dotenv.env['MICROCMS_KEY']!, 70);
     return res.contents;
   }
 }

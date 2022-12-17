@@ -10,9 +10,11 @@ abstract class MicroCMSClient {
   @GET('/separations')
   Future<MicrocmsSeparationState> getSeparationData(
     @Header('X-MICROCMS-API-KEY') String apiKey,
+    @Query('limit') int limit,
   );
   @GET('/yolo')
   Future<MicrocmsYoloState> getYoloData(
     @Header('X-MICROCMS-API-KEY') String apiKey,
+    @Query('limit') int limit,
   );
 }
