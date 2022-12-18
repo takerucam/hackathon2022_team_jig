@@ -56,11 +56,9 @@ class CameraView extends HookConsumerWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recognitions = ref.watch(recognitionsProvider);
+    final highestRecog = ref.watch(highestRecognition);
+    final highLabel = highestRecog?.displayLabel ?? '';
 
-    recognitions.sort(((a, b) => -(a.score.compareTo(b.score))));
-
-    final highLabel = recognitions.isEmpty ? '' : recognitions[0].displayLabel;
     useAsyncEffect(() {
       if (highLabel.isNotEmpty) {
         ref.read(toastProvider.notifier).resetToastState();
@@ -75,8 +73,8 @@ class CameraView extends HookConsumerWidget {
       aspectRatio: 1 / camera.cameraController.value.aspectRatio,
       child: CameraPreview(
         camera.cameraController,
-        child: buildBoxes(
-          recognitions,
+        child: buildBox(
+          highestRecog,
           camera.actualPreviewSize,
           camera.ratio,
         ),
@@ -84,24 +82,21 @@ class CameraView extends HookConsumerWidget {
     );
   }
 
-  Widget buildBoxes(
-    List<Recognition> recognitions,
+  Widget buildBox(
+    Recognition? recognition,
     Size actualPreviewSize,
     double ratio,
   ) {
-    if (recognitions.isEmpty) {
+    if (recognition == null) {
       return const SizedBox();
     }
-    return Stack(
-      clipBehavior: Clip.none,
-      children: recognitions.map((result) {
-        return BoundingBox(
-          result: result,
-          actualPreviewSize: actualPreviewSize,
-          ratio: ratio,
-        );
-      }).toList(),
-    );
+    return Stack(clipBehavior: Clip.none, children: [
+      BoundingBox(
+        result: recognition,
+        actualPreviewSize: actualPreviewSize,
+        ratio: ratio,
+      )
+    ]);
   }
 }
 

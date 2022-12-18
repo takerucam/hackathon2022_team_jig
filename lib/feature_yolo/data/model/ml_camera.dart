@@ -2,11 +2,20 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:camera/camera.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/entity/recognition.dart';
 import 'package:hackathon2022_team_jig/feature_yolo//data/model/classifier.dart';
 import 'package:hackathon2022_team_jig/feature_yolo/utils/isolate_utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+final highestRecognition = Provider<Recognition?>((ref) {
+  final recognitions = ref.watch(recognitionsProvider);
+
+  recognitions.sort(((a, b) => -(a.score.compareTo(b.score))));
+
+  return recognitions.firstOrNull;
+});
 
 final mlCameraProvider =
     FutureProvider.autoDispose.family<MLCamera, Size>((ref, size) async {
