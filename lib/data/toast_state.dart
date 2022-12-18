@@ -6,6 +6,7 @@ part 'toast_state.freezed.dart';
 class ToastState with _$ToastState {
   factory ToastState({
     String? icon,
+    String? detailUrl,
     @Default('') String item,
     @Default('') String category,
     @Default('') String separation,

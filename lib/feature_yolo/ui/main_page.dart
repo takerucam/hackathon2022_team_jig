@@ -7,6 +7,7 @@ import 'package:hackathon2022_team_jig/feature_yolo//data/model/ml_camera.dart';
 import 'package:hackathon2022_team_jig/model/toast_controller.dart';
 import 'package:hackathon2022_team_jig/util/use_async_effect.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class BoundingBox extends StatelessWidget {
   final Recognition result;
@@ -55,11 +56,9 @@ class CameraView extends HookConsumerWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recognitions = ref.watch(recognitionsProvider);
+    final highestRecog = ref.watch(highestRecognition);
+    final highLabel = highestRecog?.displayLabel ?? '';
 
-    recognitions.sort(((a, b) => -(a.score.compareTo(b.score))));
-
-    final highLabel = recognitions.isEmpty ? '' : recognitions[0].displayLabel;
     useAsyncEffect(() {
       if (highLabel.isNotEmpty) {
         ref.read(toastProvider.notifier).resetToastState();
@@ -74,8 +73,8 @@ class CameraView extends HookConsumerWidget {
       aspectRatio: 1 / camera.cameraController.value.aspectRatio,
       child: CameraPreview(
         camera.cameraController,
-        child: buildBoxes(
-          recognitions,
+        child: buildBox(
+          highestRecog,
           camera.actualPreviewSize,
           camera.ratio,
         ),
@@ -83,24 +82,21 @@ class CameraView extends HookConsumerWidget {
     );
   }
 
-  Widget buildBoxes(
-    List<Recognition> recognitions,
+  Widget buildBox(
+    Recognition? recognition,
     Size actualPreviewSize,
     double ratio,
   ) {
-    if (recognitions.isEmpty) {
+    if (recognition == null) {
       return const SizedBox();
     }
-    return Stack(
-      clipBehavior: Clip.none,
-      children: recognitions.map((result) {
-        return BoundingBox(
-          result: result,
-          actualPreviewSize: actualPreviewSize,
-          ratio: ratio,
-        );
-      }).toList(),
-    );
+    return Stack(clipBehavior: Clip.none, children: [
+      BoundingBox(
+        result: recognition,
+        actualPreviewSize: actualPreviewSize,
+        ratio: ratio,
+      )
+    ]);
   }
 }
 
@@ -114,25 +110,24 @@ class MainPage extends HookConsumerWidget {
     final mlCamera = ref.watch(mlCameraProvider(size));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ゴミ分別'),
-      ),
-      body: mlCamera.when(
-        data: (mlCamera) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CameraView(camera: mlCamera),
-            const Flexible(
-              child: _ToastCategories(),
-            )
-          ],
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (err, stack) => Center(
-          child: Text(
-            err.toString(),
+      body: SafeArea(
+        child: mlCamera.when(
+          data: (mlCamera) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CameraView(camera: mlCamera),
+              const Flexible(
+                child: _ToastCategories(),
+              )
+            ],
+          ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          error: (err, stack) => Center(
+            child: Text(
+              err.toString(),
+            ),
           ),
         ),
       ),
@@ -233,7 +228,35 @@ class _ToastCategories extends HookConsumerWidget {
     return ListView.separated(
       separatorBuilder: (context, index) =>
           const Divider(height: 2, color: Colors.grey),
-      itemBuilder: (context, index) => _Toast(list[index]),
+      itemBuilder: (context, index) {
+        final toast = list[index];
+
+        return GestureDetector(
+          onTap: () {
+            final url = toast.detailUrl;
+            if (url == null) return;
+
+            showMaterialModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Container(
+                    constraints: const BoxConstraints(maxHeight: 600),
+                    child: CachedNetworkImage(
+                      imageUrl: url,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                        child: CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  );
+                });
+          },
+          child: _Toast(list[index]),
+        );
+      },
       itemCount: list.length,
     );
   }
