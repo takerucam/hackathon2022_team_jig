@@ -53,6 +53,9 @@ _$_SeparationsState _$$_SeparationsStateFromJson(Map<String, dynamic> json) =>
       icon: json['icon'] == null
           ? null
           : ImageResponse.fromJson(json['icon'] as Map<String, dynamic>),
+      detailImage: json['detailImage'] == null
+          ? null
+          : ImageResponse.fromJson(json['detailImage'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_SeparationsStateToJson(_$_SeparationsState instance) =>
@@ -61,6 +64,7 @@ Map<String, dynamic> _$$_SeparationsStateToJson(_$_SeparationsState instance) =>
       'category': instance.category,
       'candidate': instance.candidate,
       'icon': instance.icon?.toJson(),
+      'detailImage': instance.detailImage?.toJson(),
     };
 
 _$_YoloState _$$_YoloStateFromJson(Map<String, dynamic> json) => _$_YoloState(

@@ -444,6 +444,7 @@ mixin _$SeparationsState {
   String get category => throw _privateConstructorUsedError;
   String get candidate => throw _privateConstructorUsedError;
   ImageResponse? get icon => throw _privateConstructorUsedError;
+  ImageResponse? get detailImage => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -458,9 +459,14 @@ abstract class $SeparationsStateCopyWith<$Res> {
       _$SeparationsStateCopyWithImpl<$Res, SeparationsState>;
   @useResult
   $Res call(
-      {String name, String category, String candidate, ImageResponse? icon});
+      {String name,
+      String category,
+      String candidate,
+      ImageResponse? icon,
+      ImageResponse? detailImage});
 
   $ImageResponseCopyWith<$Res>? get icon;
+  $ImageResponseCopyWith<$Res>? get detailImage;
 }
 
 /// @nodoc
@@ -480,6 +486,7 @@ class _$SeparationsStateCopyWithImpl<$Res, $Val extends SeparationsState>
     Object? category = null,
     Object? candidate = null,
     Object? icon = freezed,
+    Object? detailImage = freezed,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -498,6 +505,10 @@ class _$SeparationsStateCopyWithImpl<$Res, $Val extends SeparationsState>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as ImageResponse?,
+      detailImage: freezed == detailImage
+          ? _value.detailImage
+          : detailImage // ignore: cast_nullable_to_non_nullable
+              as ImageResponse?,
     ) as $Val);
   }
 
@@ -512,6 +523,18 @@ class _$SeparationsStateCopyWithImpl<$Res, $Val extends SeparationsState>
       return _then(_value.copyWith(icon: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ImageResponseCopyWith<$Res>? get detailImage {
+    if (_value.detailImage == null) {
+      return null;
+    }
+
+    return $ImageResponseCopyWith<$Res>(_value.detailImage!, (value) {
+      return _then(_value.copyWith(detailImage: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -523,10 +546,16 @@ abstract class _$$_SeparationsStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String name, String category, String candidate, ImageResponse? icon});
+      {String name,
+      String category,
+      String candidate,
+      ImageResponse? icon,
+      ImageResponse? detailImage});
 
   @override
   $ImageResponseCopyWith<$Res>? get icon;
+  @override
+  $ImageResponseCopyWith<$Res>? get detailImage;
 }
 
 /// @nodoc
@@ -544,6 +573,7 @@ class __$$_SeparationsStateCopyWithImpl<$Res>
     Object? category = null,
     Object? candidate = null,
     Object? icon = freezed,
+    Object? detailImage = freezed,
   }) {
     return _then(_$_SeparationsState(
       name: null == name
@@ -562,6 +592,10 @@ class __$$_SeparationsStateCopyWithImpl<$Res>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as ImageResponse?,
+      detailImage: freezed == detailImage
+          ? _value.detailImage
+          : detailImage // ignore: cast_nullable_to_non_nullable
+              as ImageResponse?,
     ));
   }
 }
@@ -571,7 +605,11 @@ class __$$_SeparationsStateCopyWithImpl<$Res>
 @JsonSerializable(explicitToJson: true)
 class _$_SeparationsState extends _SeparationsState {
   _$_SeparationsState(
-      {this.name = '', this.category = '', this.candidate = '', this.icon})
+      {this.name = '',
+      this.category = '',
+      this.candidate = '',
+      this.icon,
+      this.detailImage})
       : super._();
 
   factory _$_SeparationsState.fromJson(Map<String, dynamic> json) =>
@@ -588,10 +626,12 @@ class _$_SeparationsState extends _SeparationsState {
   final String candidate;
   @override
   final ImageResponse? icon;
+  @override
+  final ImageResponse? detailImage;
 
   @override
   String toString() {
-    return 'SeparationsState(name: $name, category: $category, candidate: $candidate, icon: $icon)';
+    return 'SeparationsState(name: $name, category: $category, candidate: $candidate, icon: $icon, detailImage: $detailImage)';
   }
 
   @override
@@ -604,12 +644,15 @@ class _$_SeparationsState extends _SeparationsState {
                 other.category == category) &&
             (identical(other.candidate, candidate) ||
                 other.candidate == candidate) &&
-            (identical(other.icon, icon) || other.icon == icon));
+            (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.detailImage, detailImage) ||
+                other.detailImage == detailImage));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, name, category, candidate, icon);
+  int get hashCode =>
+      Object.hash(runtimeType, name, category, candidate, icon, detailImage);
 
   @JsonKey(ignore: true)
   @override
@@ -630,7 +673,8 @@ abstract class _SeparationsState extends SeparationsState {
       {final String name,
       final String category,
       final String candidate,
-      final ImageResponse? icon}) = _$_SeparationsState;
+      final ImageResponse? icon,
+      final ImageResponse? detailImage}) = _$_SeparationsState;
   _SeparationsState._() : super._();
 
   factory _SeparationsState.fromJson(Map<String, dynamic> json) =
@@ -644,6 +688,8 @@ abstract class _SeparationsState extends SeparationsState {
   String get candidate;
   @override
   ImageResponse? get icon;
+  @override
+  ImageResponse? get detailImage;
   @override
   @JsonKey(ignore: true)
   _$$_SeparationsStateCopyWith<_$_SeparationsState> get copyWith =>

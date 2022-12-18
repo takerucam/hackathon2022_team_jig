@@ -40,6 +40,7 @@ class SeparationsState with _$SeparationsState {
     @Default('') String category,
     @Default('') String candidate,
     ImageResponse? icon,
+    ImageResponse? detailImage,
   }) = _SeparationsState;
 
   factory SeparationsState.fromJson(Map<String, dynamic> json) =>
