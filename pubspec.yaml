@@ -50,6 +50,7 @@ dependencies:
   cached_network_image: ^3.2.3
   modal_bottom_sheet: ^2.1.2
   collection: ^1.16.0
+  flutter_launcher_icons: ^0.11.0
 
 dev_dependencies:
   flutter_test:
@@ -74,3 +75,8 @@ flutter:
     - .env
     - assets/
   uses-material-design: true
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path: 'assets/logo.png'
