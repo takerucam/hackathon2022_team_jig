@@ -43,6 +43,7 @@ class ToastController extends StateNotifier<List<ToastState>> {
           icon: toast.icon?.url,
           item: yoloCandidates[i],
           separation: toast.name,
+          detailUrl: toast.detailImage?.url,
         ),
       ];
     });

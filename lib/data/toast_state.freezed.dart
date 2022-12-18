@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ToastState {
   String? get icon => throw _privateConstructorUsedError;
+  String? get detailUrl => throw _privateConstructorUsedError;
   String get item => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   String get separation => throw _privateConstructorUsedError;
@@ -32,7 +33,12 @@ abstract class $ToastStateCopyWith<$Res> {
           ToastState value, $Res Function(ToastState) then) =
       _$ToastStateCopyWithImpl<$Res, ToastState>;
   @useResult
-  $Res call({String? icon, String item, String category, String separation});
+  $Res call(
+      {String? icon,
+      String? detailUrl,
+      String item,
+      String category,
+      String separation});
 }
 
 /// @nodoc
@@ -49,6 +55,7 @@ class _$ToastStateCopyWithImpl<$Res, $Val extends ToastState>
   @override
   $Res call({
     Object? icon = freezed,
+    Object? detailUrl = freezed,
     Object? item = null,
     Object? category = null,
     Object? separation = null,
@@ -57,6 +64,10 @@ class _$ToastStateCopyWithImpl<$Res, $Val extends ToastState>
       icon: freezed == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
+              as String?,
+      detailUrl: freezed == detailUrl
+          ? _value.detailUrl
+          : detailUrl // ignore: cast_nullable_to_non_nullable
               as String?,
       item: null == item
           ? _value.item
@@ -82,7 +93,12 @@ abstract class _$$_ToastStateCopyWith<$Res>
       __$$_ToastStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? icon, String item, String category, String separation});
+  $Res call(
+      {String? icon,
+      String? detailUrl,
+      String item,
+      String category,
+      String separation});
 }
 
 /// @nodoc
@@ -97,6 +113,7 @@ class __$$_ToastStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? icon = freezed,
+    Object? detailUrl = freezed,
     Object? item = null,
     Object? category = null,
     Object? separation = null,
@@ -105,6 +122,10 @@ class __$$_ToastStateCopyWithImpl<$Res>
       icon: freezed == icon
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
+              as String?,
+      detailUrl: freezed == detailUrl
+          ? _value.detailUrl
+          : detailUrl // ignore: cast_nullable_to_non_nullable
               as String?,
       item: null == item
           ? _value.item
@@ -126,10 +147,16 @@ class __$$_ToastStateCopyWithImpl<$Res>
 
 class _$_ToastState implements _ToastState {
   _$_ToastState(
-      {this.icon, this.item = '', this.category = '', this.separation = ''});
+      {this.icon,
+      this.detailUrl,
+      this.item = '',
+      this.category = '',
+      this.separation = ''});
 
   @override
   final String? icon;
+  @override
+  final String? detailUrl;
   @override
   @JsonKey()
   final String item;
@@ -142,7 +169,7 @@ class _$_ToastState implements _ToastState {
 
   @override
   String toString() {
-    return 'ToastState(icon: $icon, item: $item, category: $category, separation: $separation)';
+    return 'ToastState(icon: $icon, detailUrl: $detailUrl, item: $item, category: $category, separation: $separation)';
   }
 
   @override
@@ -151,6 +178,8 @@ class _$_ToastState implements _ToastState {
         (other.runtimeType == runtimeType &&
             other is _$_ToastState &&
             (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.detailUrl, detailUrl) ||
+                other.detailUrl == detailUrl) &&
             (identical(other.item, item) || other.item == item) &&
             (identical(other.category, category) ||
                 other.category == category) &&
@@ -160,7 +189,7 @@ class _$_ToastState implements _ToastState {
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, icon, item, category, separation);
+      Object.hash(runtimeType, icon, detailUrl, item, category, separation);
 
   @JsonKey(ignore: true)
   @override
@@ -172,12 +201,15 @@ class _$_ToastState implements _ToastState {
 abstract class _ToastState implements ToastState {
   factory _ToastState(
       {final String? icon,
+      final String? detailUrl,
       final String item,
       final String category,
       final String separation}) = _$_ToastState;
 
   @override
   String? get icon;
+  @override
+  String? get detailUrl;
   @override
   String get item;
   @override

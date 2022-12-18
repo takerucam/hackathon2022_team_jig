@@ -228,22 +228,35 @@ class _ToastCategories extends HookConsumerWidget {
     return ListView.separated(
       separatorBuilder: (context, index) =>
           const Divider(height: 2, color: Colors.grey),
-      itemBuilder: (context, index) => GestureDetector(
-        onTap: () {
-          showMaterialModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return CachedNetworkImage(
-                  width: 200,
-                  height: 400,
-                  // TODO 仮URL
-                  imageUrl:
-                      "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
-                );
-              });
-        },
-        child: _Toast(list[index]),
-      ),
+      itemBuilder: (context, index) {
+        final toast = list[index];
+
+        return GestureDetector(
+          onTap: () {
+            final url = toast.detailUrl;
+            if (url == null) return;
+
+            showMaterialModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Container(
+                    constraints: const BoxConstraints(maxHeight: 600),
+                    child: CachedNetworkImage(
+                      imageUrl: url,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                        child: CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  );
+                });
+          },
+          child: _Toast(list[index]),
+        );
+      },
       itemCount: list.length,
     );
   }
