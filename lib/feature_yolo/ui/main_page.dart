@@ -7,6 +7,7 @@ import 'package:hackathon2022_team_jig/feature_yolo//data/model/ml_camera.dart';
 import 'package:hackathon2022_team_jig/model/toast_controller.dart';
 import 'package:hackathon2022_team_jig/util/use_async_effect.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class BoundingBox extends StatelessWidget {
   final Recognition result;
@@ -114,25 +115,24 @@ class MainPage extends HookConsumerWidget {
     final mlCamera = ref.watch(mlCameraProvider(size));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ゴミ分別'),
-      ),
-      body: mlCamera.when(
-        data: (mlCamera) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CameraView(camera: mlCamera),
-            const Flexible(
-              child: _ToastCategories(),
-            )
-          ],
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (err, stack) => Center(
-          child: Text(
-            err.toString(),
+      body: SafeArea(
+        child: mlCamera.when(
+          data: (mlCamera) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CameraView(camera: mlCamera),
+              const Flexible(
+                child: _ToastCategories(),
+              )
+            ],
+          ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          error: (err, stack) => Center(
+            child: Text(
+              err.toString(),
+            ),
           ),
         ),
       ),
@@ -233,7 +233,22 @@ class _ToastCategories extends HookConsumerWidget {
     return ListView.separated(
       separatorBuilder: (context, index) =>
           const Divider(height: 2, color: Colors.grey),
-      itemBuilder: (context, index) => _Toast(list[index]),
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () {
+          showMaterialModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return CachedNetworkImage(
+                  width: 200,
+                  height: 400,
+                  // TODO 仮URL
+                  imageUrl:
+                      "https://images.microcms-assets.io/assets/42f2dca8f920452c91f3af77ab894c44/15c048386e9e494ea7573c69e75f9a7b/icon1.png",
+                );
+              });
+        },
+        child: _Toast(list[index]),
+      ),
       itemCount: list.length,
     );
   }

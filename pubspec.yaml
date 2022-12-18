@@ -48,6 +48,7 @@ dependencies:
   dio: ^4.0.6
   intl: ^0.17.0
   cached_network_image: ^3.2.3
+  modal_bottom_sheet: ^2.1.2
 
 dev_dependencies:
   flutter_test:
